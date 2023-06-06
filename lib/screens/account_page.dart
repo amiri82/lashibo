@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:lashibo/main.dart";
+import "change_info.dart";
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -87,12 +88,19 @@ class _AccountPageState extends State<AccountPage> {
                   ],
                 ),
               ),
-              const ListTile(
-                trailing: Directionality(
+              ListTile(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ChangeInfoPage(),
+                    ),
+                  );
+                },
+                trailing: const Directionality(
                   textDirection: TextDirection.ltr,
                   child: Icon(Icons.arrow_back_rounded),
                 ),
-                title: Text("ویرایش اطلاعات"),
+                title: const Text("ویرایش اطلاعات"),
               ),
               ListTile(
                 onTap: () {
