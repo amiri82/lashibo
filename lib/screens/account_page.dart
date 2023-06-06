@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:lashibo/main.dart";
+import "package:lashibo/screens/payment.dart";
 import "change_info.dart";
 
 class AccountPage extends StatefulWidget {
@@ -11,6 +12,11 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   int balance = 0;
+  final TextEditingController paymentController = TextEditingController();
+  final TextEditingController monthController = TextEditingController();
+  bool _success = false;
+  int _price = 0;
+  int _premiumMonthsLeft = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,7 @@ class _AccountPageState extends State<AccountPage> {
           child: ListView(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.375,
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
@@ -64,7 +70,33 @@ class _AccountPageState extends State<AccountPage> {
                             fontSize: 15,
                           ),
                         ),
-                        Text("$balance"),
+                        Text(
+                          "$balance",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "اکانت ویژه : ",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          _premiumMonthsLeft.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          " ماه",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(
@@ -74,7 +106,57 @@ class _AccountPageState extends State<AccountPage> {
                       width: MediaQuery.of(context).size.width * 0.7,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("مبلغ مورد نظر را وارد کنید"),
+                                actions: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        TextField(
+                                          controller: paymentController,
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 200,
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              Navigator.of(context).pop();
+                                              _success =
+                                                  await Navigator.of(context)
+                                                      .push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PaymentPage(
+                                                    amount: int.parse(
+                                                        paymentController.text),
+                                                  ),
+                                                ),
+                                              );
+                                              setState(() {
+                                                balance += _success
+                                                    ? int.parse(
+                                                        paymentController.text)
+                                                    : 0;
+                                              });
+                                            },
+                                            child: const Text("پرداخت"),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -112,12 +194,67 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 title: const Text("تغییر تم برنامه"),
               ),
-              const ListTile(
-                trailing: Directionality(
+              ListTile(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return StatefulBuilder(
+                        builder: (context, setSt) => AlertDialog(
+                          title: const Center(
+                            child: Text("تعداد ماه های مورد نطر"),
+                          ),
+                          actions: [
+                            TextField(
+                              controller: monthController,
+                              onChanged: (changed) {
+                                if (changed.isNotEmpty) {
+                                  setSt(() {
+                                    _price = int.parse(changed) * 100000;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("قیمت"),
+                                Text(_price.toString()),
+                                const Text("تومان"),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 70,
+                              child: ElevatedButton(
+                                child: const Text("تایید"),
+                                onPressed: () {
+                                  if (balance >= _price) {
+                                    setState(
+                                      () {
+                                        balance -= _price;
+                                        _premiumMonthsLeft +=
+                                            int.parse(monthController.text);
+                                      },
+                                    );
+                                  }
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                trailing: const Directionality(
                   textDirection: TextDirection.ltr,
                   child: Icon(Icons.arrow_back_rounded),
                 ),
-                title: Text("ارتقا به اکانت ویژه"),
+                title: const Text("ارتقا به اکانت ویژه"),
               ),
               const SizedBox(
                 height: 20,

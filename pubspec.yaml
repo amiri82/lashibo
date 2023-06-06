@@ -81,7 +81,7 @@ flutter:
     - family: Iranyekan
       fonts:
         - asset: assets/fonts/Qs_Iranyekan.ttf
-        - asset: fonts/Qs_iranyeakanbold.ttf
+        - asset: assets/fonts/Qs_Iranyekanbold.ttf
           weight: 700
   #   - family: Trajan Pro
   #     fonts:
