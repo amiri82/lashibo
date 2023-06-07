@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
 import "package:lashibo/screens/account_page.dart";
+import "package:lashibo/screens/home_page.dart";
+import "library_page.dart";
+import "shop_page.dart";
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -17,7 +20,7 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        onTap: (index){
+        onTap: (index) {
           setState(() {
             currentIndex = index;
           });
@@ -46,12 +49,17 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-bodyGenerator(currentIndex){
-  switch(currentIndex){
-    case 2 :
+bodyGenerator(currentIndex) {
+  switch (currentIndex) {
+    case 0:
+      return HomePage();
+    case 1:
+      return LibraryPage();
+    case 2:
       return AccountPage();
+    case 3:
+      return ShopPage();
     default:
       return AccountPage();
   }
 }
-
