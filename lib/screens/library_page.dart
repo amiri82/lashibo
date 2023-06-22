@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "details_page.dart";
 
 class LibraryPage extends StatefulWidget {
   const LibraryPage({Key? key}) : super(key: key);
@@ -9,13 +10,15 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage> {
   String dropDownValue = 'کتاب';
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
-          SizedBox(height: 15,)
-          ,
+          const SizedBox(
+            height: 15,
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -26,7 +29,7 @@ class _LibraryPageState extends State<LibraryPage> {
                   items: <String>[
                     'تاریخ مطالعه',
                     'فایل صوتی',
-                    'کتاب' ,
+                    'کتاب',
                     'بیشترین پسند'
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
@@ -48,7 +51,9 @@ class _LibraryPageState extends State<LibraryPage> {
               ],
             ),
           ),
-          SizedBox(height: 15,),
+          SizedBox(
+            height: 15,
+          ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.75,
             width: MediaQuery.of(context).size.width,
@@ -57,13 +62,23 @@ class _LibraryPageState extends State<LibraryPage> {
                 crossAxisCount: 3,
                 children: List.generate(
                   10,
-                  (index) => Container(
-                    width: 100,
-                    child: Column(
-                      children: [
-                        Flexible(child: Image.asset("assets/images/sample.jpg")),
-                        Text("Book Name index:$index")
-                      ],
+                  (index) => GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => DetailsPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 100,
+                      child: Column(
+                        children: [
+                          Flexible(
+                              child: Image.asset("assets/images/sample.jpg")),
+                          Text("Book Name index:$index")
+                        ],
+                      ),
                     ),
                   ),
                 ),
