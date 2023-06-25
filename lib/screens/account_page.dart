@@ -2,6 +2,8 @@ import "package:flutter/material.dart";
 import "package:lashibo/main.dart";
 import "package:lashibo/screens/payment.dart";
 import "change_info.dart";
+import "dart:io";
+import "package:image_picker/image_picker.dart";
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -17,9 +19,27 @@ class _AccountPageState extends State<AccountPage> {
   bool _success = false;
   int _price = 0;
   int _premiumMonthsLeft = 0;
+  File? _profileImage;
+
+  void _imageSelector() async {
+    final imagePicker = ImagePicker();
+    final takenImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (takenImage == null) {
+        _profileImage = null;
+        return;
+      }
+      _profileImage = File(takenImage.path);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    Widget profileCircle = const Icon(
+      Icons.account_circle,
+      size: 100,
+    );
+    
     return Localizations.override(
       locale: const Locale("fa", "IR"),
       context: context,
@@ -43,12 +63,15 @@ class _AccountPageState extends State<AccountPage> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.05,
                     ),
-                    const CircleAvatar(
-                      radius: 50,
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 100,
+                    GestureDetector(
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: (_profileImage == null) ? null : FileImage(_profileImage!),
+                        child: _profileImage == null ? profileCircle : null,
                       ),
+                      onTap: () {
+                        _imageSelector();
+                      },
                     ),
                     const SizedBox(
                       height: 10,
