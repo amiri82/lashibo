@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "main_page.dart";
 import "register_page.dart";
+import "dart:io";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -29,8 +30,24 @@ class _LoginPageState extends State<LoginPage> {
     FilteringTextInputFormatter.deny(RegExp(r"\s"), replacementString: "")
   ];
 
+  Future<bool> authenticate(String username, String password) async {
+    Socket s = await Socket.connect("192.168.33.252", 3773);
+    s.writeln("login $username $password");
+    bool result = false;
+    var done = s.listen((Uint8List buffer) async {
+      String response = String.fromCharCodes(buffer);
+      result = response.contains("true") ? true : false;
+      s.close();
+    });
+    await done.asFuture<void>();
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
+    //_emailController.text =
+        "amirhossein.zeinali22@gmail.com"; //TODO : remove this line
+    //_passwordController.text = "Amiri1382"; //TODO : remove this line
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -59,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 8.0,
                       ),
                       const Text(
-                        "ورود با ایمیل",
+                        "ورود",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
@@ -78,15 +95,9 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _emailController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "ایمیل نمیتواند خالی باشد!";
-                            } else {
-                              RegExp emailReg =
-                                  RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-                              if (!emailReg.hasMatch(value)) {
-                                return "لظفا یک ایمیل معتبر وارد کنید!";
-                              }
-                              return null;
+                              return "ایمیل/نام کاربری نمیتواند خالی باشد!";
                             }
+                            return null;
                           },
                           inputFormatters: illegalCharacters,
                           decoration: InputDecoration(
@@ -96,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             suffixIcon: const Icon(Icons.email),
-                            labelText: "ایمیل",
+                            labelText: "ایمیل/نام کاربری",
                             labelStyle: fieldStyle,
                             floatingLabelBehavior: FloatingLabelBehavior.auto,
                             floatingLabelStyle: floatingLabelStyle,
@@ -176,13 +187,36 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           child: const Text("ورود"),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const MainPage(),
-                                ),
-                              );
+                              bool result = await authenticate(
+                                  _emailController.text,
+                                  _passwordController.text);
+                              if (result) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const MainPage(),
+                                  ),
+                                );
+                              } else {
+                                print("okay");
+                                ScaffoldMessenger.of(context)
+                                  ..removeCurrentMaterialBanner()
+                                  ..showMaterialBanner(
+                                    MaterialBanner(
+                                      content: const Text(
+                                          "نام کاربری یا رمزعبور اشتباه است"),
+                                      actions: [
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              ScaffoldMessenger.of(context)
+                                                  .hideCurrentMaterialBanner();
+                                            },
+                                            child: const Text("باشه"))
+                                      ],
+                                    ),
+                                  );
+                              }
                             }
                           },
                         ),
