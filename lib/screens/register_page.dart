@@ -1,3 +1,5 @@
+import "dart:io";
+
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
@@ -20,6 +22,24 @@ class _RegisterPageState extends State<RegisterPage> {
     fontSize: 15,
   );
 
+  Future<String?> signUp(
+      String username, String emailAddress, String password) async {
+    Socket socket = await Socket.connect("192.168.33.252", 3773);
+    String? result;
+    socket.writeln("signup $username $emailAddress $password");
+    var done = socket.listen((Uint8List buffer) async {
+      result = String.fromCharCodes(buffer);
+      socket.close();
+    });
+    await done.asFuture<void>();
+    print(result);
+    return result!.contains("error")
+        ? "خطا"
+        : result!.contains("duplicate_username")
+            ? "نام کاربری تکراری است"
+            : null;
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -30,9 +50,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    _emailController.text = "amirhossein.zeinali22@gmail.com"; //TODO : remove this line
-    _passwordController.text = "Amiri1382"; //TODO : remove this line
-    _usernameController.text = "amir"; //TODO : remove this line
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -192,10 +209,35 @@ class _RegisterPageState extends State<RegisterPage> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("ثبت نام با موفقیت انجام شد")));
-                              Navigator.of(context).pop();
+                              String? result = await signUp(
+                                  _usernameController.text,
+                                  _emailController.text,
+                                  _passwordController.text);
+                              if (result == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            "ثبت نام با موفقیت انجام شد")));
+                                Navigator.of(context).pop();
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                  ..removeCurrentMaterialBanner()
+                                  ..showMaterialBanner(
+                                    MaterialBanner(
+                                      content: Text(result),
+                                      actions: [
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              ScaffoldMessenger.of(context)
+                                                  .hideCurrentMaterialBanner();
+                                            },
+                                            child:const Text("باشه"))
+                                      ],
+                                    ),
+                                  );
+                              }
                             }
                           },
                           style: ElevatedButton.styleFrom(
