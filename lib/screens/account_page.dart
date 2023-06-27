@@ -13,7 +13,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  int balance = 0;
   final TextEditingController paymentController = TextEditingController();
   final TextEditingController monthController = TextEditingController();
   bool _success = false;
@@ -76,8 +75,8 @@ class _AccountPageState extends State<AccountPage> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const Text(
-                      "نام کاربری",
+                    Text(
+                      MyApp.of(context).currentUser!.username,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -94,7 +93,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                         ),
                         Text(
-                          "$balance",
+                          "${MyApp.of(context).currentUser!.credit}",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -163,7 +162,7 @@ class _AccountPageState extends State<AccountPage> {
                                                 ),
                                               );
                                               setState(() {
-                                                balance += _success
+                                                MyApp.of(context).currentUser!.credit += _success //TODO
                                                     ? int.parse(
                                                         paymentController.text)
                                                     : 0;
@@ -254,10 +253,10 @@ class _AccountPageState extends State<AccountPage> {
                               child: ElevatedButton(
                                 child: const Text("تایید"),
                                 onPressed: () {
-                                  if (balance >= _price) {
+                                  if (MyApp.of(context).currentUser!.credit >= _price) {
                                     setState(
                                       () {
-                                        balance -= _price;
+                                        MyApp.of(context).currentUser!.credit -= _price;
                                         _premiumMonthsLeft +=
                                             int.parse(monthController.text);
                                       },
@@ -288,7 +287,9 @@ class _AccountPageState extends State<AccountPage> {
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
+                      MyApp.of(context).currentUser = null;
                       Navigator.of(context).pop();
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const MyApp()));
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(

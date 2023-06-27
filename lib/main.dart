@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "screens/login_page.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
+import "src/User.dart";
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +23,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.light;
-
+  User? currentUser;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -52,5 +55,9 @@ class _MyAppState extends State<MyApp> {
       _themeMode =
       _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
+  }
+
+  void changeCurrentUser(String username, String emailAddress, int credit){
+    currentUser = User(username,emailAddress,credit);
   }
 }

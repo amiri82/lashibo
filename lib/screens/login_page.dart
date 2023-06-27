@@ -3,6 +3,7 @@ import "package:flutter/services.dart";
 import "main_page.dart";
 import "register_page.dart";
 import "dart:io";
+import "package:lashibo/main.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -30,13 +31,13 @@ class _LoginPageState extends State<LoginPage> {
     FilteringTextInputFormatter.deny(RegExp(r"\s"), replacementString: "")
   ];
 
-  Future<bool> authenticate(String username, String password) async {
+  Future<String> authenticate(String username, String password) async {
     Socket s = await Socket.connect("192.168.33.252", 3773);
     s.writeln("login $username $password");
-    bool result = false;
+    String result = "false";
     var done = s.listen((Uint8List buffer) async {
       String response = String.fromCharCodes(buffer);
-      result = response.contains("true") ? true : false;
+      result = response;
       s.close();
     });
     await done.asFuture<void>();
@@ -189,17 +190,19 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text("ورود"),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              bool result = await authenticate(
+                              String result = await authenticate(
                                   _emailController.text,
                                   _passwordController.text);
-                              if (result) {
+                              if (result.contains(":")) {
+                                List<String> creds = result.split(":");
+                                MyApp.of(context).changeCurrentUser(creds[0], creds[1], int.parse(creds[2]));
+                                Navigator.of(context).pop();
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const MainPage(),
                                   ),
                                 );
                               } else {
-                                print("okay");
                                 ScaffoldMessenger.of(context)
                                   ..removeCurrentMaterialBanner()
                                   ..showMaterialBanner(

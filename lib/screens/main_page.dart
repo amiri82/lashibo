@@ -28,19 +28,19 @@ class _MainPageState extends State<MainPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: "Home",
+            label: "خانه",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.my_library_books_outlined),
-            label: "Library",
+            label: "کتابخانه",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline_rounded),
-            label: "My Account",
+            label: "حساب کاربری",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.store_outlined),
-            label: "Shop",
+            label: "فروشگاه",
           ),
         ],
       ),
