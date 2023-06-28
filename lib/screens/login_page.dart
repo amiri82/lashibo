@@ -5,7 +5,6 @@ import "package:lashibo/providers/current_user_provider.dart";
 import "main_page.dart";
 import "register_page.dart";
 import "dart:io";
-import "package:lashibo/main.dart";
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

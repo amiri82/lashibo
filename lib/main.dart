@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lashibo/providers/themedata_provider.dart';
 import "screens/login_page.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
-import "src/User.dart";
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));

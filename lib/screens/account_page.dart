@@ -147,7 +147,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
-                          int newBalance = 0;
                           var x = showDialog(
                             context: context,
                             builder: (context) {
@@ -230,8 +229,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
               ),
               ListTile(
                 onTap: () async {
-                  int newPremiumMonths = 0;
-                  int newCredit = 0;
                   var x = showDialog(
                     context: context,
                     builder: (context) {
@@ -336,7 +333,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
 
   Future<String> addCredit(String username, int amount) async {
     Socket socket = await Socket.connect("192.168.213.252", 3773);
-    print("Entered this");
     socket.writeln("addcredit $username $amount");
     String result = "";
     var done = socket.listen((Uint8List buffer) {
@@ -345,7 +341,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
       socket.close();
     });
     await done.asFuture<void>();
-    print("add Credit Result : $result");
     return result;
   }
 }

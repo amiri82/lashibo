@@ -32,7 +32,6 @@ class _RegisterPageState extends State<RegisterPage> {
       socket.close();
     });
     await done.asFuture<void>();
-    print(result);
     return result!.contains("error")
         ? "خطا"
         : result!.contains("duplicate_username")
@@ -220,7 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   _passwordController.text);
                               if (result == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                         content: Text(
                                             "ثبت نام با موفقیت انجام شد")));
                                 Navigator.of(context).pop();

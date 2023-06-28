@@ -52,14 +52,14 @@ class _MainPageState extends State<MainPage> {
 bodyGenerator(currentIndex) {
   switch (currentIndex) {
     case 0:
-      return HomePage();
+      return const HomePage();
     case 1:
-      return LibraryPage();
+      return const LibraryPage();
     case 2:
-      return AccountPage();
+      return const AccountPage();
     case 3:
-      return ShopPage();
+      return const ShopPage();
     default:
-      return AccountPage();
+      return const AccountPage();
   }
 }

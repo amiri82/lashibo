@@ -1,5 +1,5 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:lashibo/src/User.dart";
+import "package:lashibo/src/user.dart";
 
 class CurrentUserNotifier extends StateNotifier<User?> {
   CurrentUserNotifier() : super(null);

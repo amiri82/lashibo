@@ -1,9 +1,7 @@
-import "dart:ffi";
 import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:lashibo/main.dart";
 import "package:lashibo/providers/current_user_provider.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
@@ -275,7 +273,7 @@ class _ChangeInfoPageState extends ConsumerState<ChangeInfoPage> {
                                                 .removeCurrentMaterialBanner();
                                             Navigator.of(context).pop();
                                           },
-                                          child: Text("باشه"),
+                                          child: const Text("باشه"),
                                         ),
                                       ],
                                     ),

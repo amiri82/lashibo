@@ -29,7 +29,6 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
 
   Future<String> addCredit(String username, int amount) async {
     Socket socket = await Socket.connect("192.168.213.252", 3773);
-    print("Entered this");
     socket.writeln("addcredit $username $amount");
     String result = "";
     var done = socket.listen((Uint8List buffer) {
@@ -38,7 +37,6 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
       socket.close();
     });
     await done.asFuture<void>();
-    print("add Credit Result : $result");
     return result;
   }
 
