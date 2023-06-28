@@ -1,7 +1,8 @@
 
 class User{
-    final String username;
-    final String emailAddress;
+    String username;
+    String emailAddress;
     int credit;
-    User(this.username,this.emailAddress,this.credit);
+    int premiumMonthsLeft;
+    User(this.username,this.emailAddress,this.credit,this.premiumMonthsLeft);
 }

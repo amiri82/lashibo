@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 import "package:flutter/material.dart";
 import "package:lashibo/main.dart";
 import "package:lashibo/screens/payment.dart";
@@ -15,10 +17,21 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   final TextEditingController paymentController = TextEditingController();
   final TextEditingController monthController = TextEditingController();
-  bool _success = false;
   int _price = 0;
-  int _premiumMonthsLeft = 0;
   File? _profileImage;
+
+  Future<String> addPremiumMonths(String username, int months) async {
+    Socket s = await Socket.connect("192.168.213.252", 3773);
+    s.writeln("addpremiummonths $username $months");
+    String result = "false";
+    var done = s.listen((Uint8List buffer) async {
+      String response = String.fromCharCodes(buffer);
+      result = response;
+      s.close();
+    });
+    await done.asFuture<void>();
+    return result;
+  }
 
   void _imageSelector() async {
     final imagePicker = ImagePicker();
@@ -38,7 +51,9 @@ class _AccountPageState extends State<AccountPage> {
       Icons.account_circle,
       size: 100,
     );
-    
+    String currentUsername = MyApp.of(context).currentUser!.username;
+    int balance = MyApp.of(context).currentUser!.credit;
+    int premiumMonthsLeft = MyApp.of(context).currentUser!.premiumMonthsLeft;
     return Localizations.override(
       locale: const Locale("fa", "IR"),
       context: context,
@@ -65,7 +80,9 @@ class _AccountPageState extends State<AccountPage> {
                     GestureDetector(
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: (_profileImage == null) ? null : FileImage(_profileImage!),
+                        backgroundImage: (_profileImage == null)
+                            ? null
+                            : FileImage(_profileImage!),
                         child: _profileImage == null ? profileCircle : null,
                       ),
                       onTap: () {
@@ -76,8 +93,8 @@ class _AccountPageState extends State<AccountPage> {
                       height: 10,
                     ),
                     Text(
-                      MyApp.of(context).currentUser!.username,
-                      style: TextStyle(
+                      currentUsername,
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -93,7 +110,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                         ),
                         Text(
-                          "${MyApp.of(context).currentUser!.credit}",
+                          "$balance",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -108,7 +125,7 @@ class _AccountPageState extends State<AccountPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          _premiumMonthsLeft.toString(),
+                          "$premiumMonthsLeft",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -128,8 +145,9 @@ class _AccountPageState extends State<AccountPage> {
                       width: MediaQuery.of(context).size.width * 0.7,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
+                        onPressed: () async {
+                          int newBalance = 0;
+                          var x = showDialog(
                             context: context,
                             builder: (context) {
                               return AlertDialog(
@@ -149,8 +167,7 @@ class _AccountPageState extends State<AccountPage> {
                                           width: 200,
                                           child: ElevatedButton(
                                             onPressed: () async {
-                                              Navigator.of(context).pop();
-                                              _success =
+                                              newBalance =
                                                   await Navigator.of(context)
                                                       .push(
                                                 MaterialPageRoute(
@@ -161,23 +178,22 @@ class _AccountPageState extends State<AccountPage> {
                                                   ),
                                                 ),
                                               );
-                                              setState(() {
-                                                MyApp.of(context).currentUser!.credit += _success //TODO
-                                                    ? int.parse(
-                                                        paymentController.text)
-                                                    : 0;
-                                              });
+                                              Navigator.of(context).pop();
                                             },
                                             child: const Text("پرداخت"),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  )
+                                  ),
                                 ],
                               );
                             },
                           );
+                          await x;
+                          setState(() {
+                            balance = newBalance;
+                          });
                         },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -193,12 +209,15 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
               ListTile(
-                onTap: () {
-                  Navigator.of(context).push(
+                onTap: () async {
+                  String newUsername = await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const ChangeInfoPage(),
                     ),
                   );
+                  setState(() {
+                    currentUsername = MyApp.of(context).currentUser!.username;
+                  });
                 },
                 trailing: const Directionality(
                   textDirection: TextDirection.ltr,
@@ -217,8 +236,10 @@ class _AccountPageState extends State<AccountPage> {
                 title: const Text("تغییر تم برنامه"),
               ),
               ListTile(
-                onTap: () {
-                  showDialog(
+                onTap: () async {
+                  int newPremiumMonths = 0;
+                  int newCredit = 0;
+                  var x = showDialog(
                     context: context,
                     builder: (context) {
                       return StatefulBuilder(
@@ -232,7 +253,7 @@ class _AccountPageState extends State<AccountPage> {
                               onChanged: (changed) {
                                 if (changed.isNotEmpty) {
                                   setSt(() {
-                                    _price = int.parse(changed) * 100000;
+                                    _price = int.parse(changed) * 10000;
                                   });
                                 }
                               },
@@ -252,15 +273,27 @@ class _AccountPageState extends State<AccountPage> {
                               width: 70,
                               child: ElevatedButton(
                                 child: const Text("تایید"),
-                                onPressed: () {
-                                  if (MyApp.of(context).currentUser!.credit >= _price) {
-                                    setState(
-                                      () {
-                                        MyApp.of(context).currentUser!.credit -= _price;
-                                        _premiumMonthsLeft +=
-                                            int.parse(monthController.text);
-                                      },
-                                    );
+                                onPressed: () async {
+                                  String currentUsername =
+                                      MyApp.of(context).currentUser!.username;
+                                  String serverRes =
+                                      await addCredit(currentUsername, -_price);
+                                  bool success1 = serverRes.contains("true");
+                                  String serverRes2 = await addPremiumMonths(
+                                      currentUsername,
+                                      int.parse(monthController.text));
+                                  bool success2 = serverRes2.contains("true");
+                                  if (success1 && success2) {
+                                    MyApp.of(context).currentUser!.credit -=
+                                        _price;
+                                    MyApp.of(context)
+                                            .currentUser!
+                                            .premiumMonthsLeft +=
+                                        int.parse(monthController.text);
+                                    newPremiumMonths = premiumMonthsLeft +
+                                        int.parse(monthController.text);
+                                    newCredit = balance - _price;
+                                    //_premiumMonthsLeft +=  int.parse(monthController.text); //TODO
                                   }
                                   Navigator.of(context).pop();
                                 },
@@ -271,6 +304,10 @@ class _AccountPageState extends State<AccountPage> {
                       );
                     },
                   );
+                  await x;
+                  setState(() {
+                    premiumMonthsLeft = newPremiumMonths;
+                  });
                 },
                 trailing: const Directionality(
                   textDirection: TextDirection.ltr,
@@ -289,7 +326,8 @@ class _AccountPageState extends State<AccountPage> {
                     onPressed: () {
                       MyApp.of(context).currentUser = null;
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const MyApp()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const MyApp()));
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -307,5 +345,20 @@ class _AccountPageState extends State<AccountPage> {
         ),
       ),
     );
+  }
+
+  Future<String> addCredit(String username, int amount) async {
+    Socket socket = await Socket.connect("192.168.213.252", 3773);
+    print("Entered this");
+    socket.writeln("addcredit $username $amount");
+    String result = "";
+    var done = socket.listen((Uint8List buffer) {
+      String response = String.fromCharCodes(buffer);
+      result = response;
+      socket.close();
+    });
+    await done.asFuture<void>();
+    print("add Credit Result : $result");
+    return result;
   }
 }

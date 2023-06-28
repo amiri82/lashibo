@@ -57,7 +57,11 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void changeCurrentUser(String username, String emailAddress, int credit){
-    currentUser = User(username,emailAddress,credit);
+  void changeCurrentUser(String username, String emailAddress, int credit,int premiumMonthsLeft){
+    currentUser = User(username,emailAddress,credit,premiumMonthsLeft);
+  }
+
+  void refreshCredit(){
+
   }
 }

@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<String?> signUp(
       String username, String emailAddress, String password) async {
-    Socket socket = await Socket.connect("192.168.33.252", 3773);
+    Socket socket = await Socket.connect("192.168.213.252", 3773);
     String? result;
     socket.writeln("signup $username $emailAddress $password");
     var done = socket.listen((Uint8List buffer) async {
@@ -173,6 +173,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               if (!passReg.hasMatch(value)) {
                                 return "رمزعبور باید حداقل ۸ کاراکتر و شامل حداقل یک حرف بزرگ و یک عدد باشد";
                               }
+                              if(value.contains(_usernameController.text))
+                                return "رمز عبور نمی تواند شامل نام کاربری باشد";
                             }
                             return null;
                           },

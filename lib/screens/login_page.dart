@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   ];
 
   Future<String> authenticate(String username, String password) async {
-    Socket s = await Socket.connect("192.168.33.252", 3773);
+    Socket s = await Socket.connect("192.168.213.252", 3773);
     s.writeln("login $username $password");
     String result = "false";
     var done = s.listen((Uint8List buffer) async {
@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                   _passwordController.text);
                               if (result.contains(":")) {
                                 List<String> creds = result.split(":");
-                                MyApp.of(context).changeCurrentUser(creds[0], creds[1], int.parse(creds[2]));
+                                MyApp.of(context).changeCurrentUser(creds[0], creds[1], int.parse(creds[2]),int.parse(creds[3]));
                                 Navigator.of(context).pop();
                                 Navigator.of(context).push(
                                   MaterialPageRoute(

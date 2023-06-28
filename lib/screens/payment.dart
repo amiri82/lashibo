@@ -1,4 +1,8 @@
+import "dart:io";
+
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:lashibo/main.dart";
 
 class PaymentPage extends StatefulWidget {
   final int amount;
@@ -20,6 +24,21 @@ class _PaymentPageState extends State<PaymentPage> {
     fontSize: 15,
   );
 
+  Future<String> addCredit(String username, int amount) async {
+    Socket socket = await Socket.connect("192.168.213.252", 3773);
+    print("Entered this");
+    socket.writeln(
+        "addcredit $username $amount");
+    String result = "";
+    var done = socket.listen((Uint8List buffer) {
+      String response = String.fromCharCodes(buffer);
+      result = response;
+      socket.close();
+    });
+    await done.asFuture<void>();
+    print("add Credit Result : $result");
+    return result;
+  }
   final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -127,8 +146,14 @@ class _PaymentPageState extends State<PaymentPage> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context,passwordController.text == '3056' ? true : false);
+                        onPressed: () async {
+                          String currentUsername = MyApp.of(context).currentUser!.username;
+                          String serverRes = await addCredit(currentUsername, widget.amount);
+                          bool success = serverRes.contains("true") && passwordController.text == '3056';
+                          if(success){
+                            MyApp.of(context).currentUser!.credit += widget.amount;
+                          }
+                          Navigator.pop(context,MyApp.of(context).currentUser!.credit);
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,
