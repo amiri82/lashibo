@@ -11,21 +11,11 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerStatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // ignore: library_private_types_in_public_api
-  static _MyAppState of(BuildContext context) =>
-      context.findAncestorStateOfType<_MyAppState>()!;
-
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends ConsumerState<MyApp> {
-  User? currentUser;
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
     return MaterialApp(
       theme: ThemeData(
@@ -51,11 +41,4 @@ class _MyAppState extends ConsumerState<MyApp> {
     );
   }
 
-  void changeCurrentUser(String username, String emailAddress, int credit,int premiumMonthsLeft){
-    currentUser = User(username,emailAddress,credit,premiumMonthsLeft);
-  }
-
-  void refreshCredit(){
-
-  }
 }

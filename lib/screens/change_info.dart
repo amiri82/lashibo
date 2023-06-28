@@ -169,7 +169,12 @@ class _ChangeInfoPageState extends ConsumerState<ChangeInfoPage> {
                               if (!passReg.hasMatch(value)) {
                                 return "رمزعبور باید حداقل ۸ کاراکتر و شامل حداقل یک حرف بزرگ و یک عدد باشد";
                               }
-                              if (value.contains(_usernameController.text)) {
+                              if(_usernameController.text.isNotEmpty){
+                                if (value.contains(_usernameController.text)) {
+                                  return "رمز عبور نمی تواند شامل نام کاربری باشد";
+                                }
+                              }
+                              else if(value.contains(ref.read(currentUserProvider)!.username)) {
                                 return "رمز عبور نمی تواند شامل نام کاربری باشد";
                               }
                             }

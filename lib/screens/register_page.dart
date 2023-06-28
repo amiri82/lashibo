@@ -173,8 +173,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               if (!passReg.hasMatch(value)) {
                                 return "رمزعبور باید حداقل ۸ کاراکتر و شامل حداقل یک حرف بزرگ و یک عدد باشد";
                               }
-                              if(value.contains(_usernameController.text))
+                              if(value.contains(_usernameController.text)) {
                                 return "رمز عبور نمی تواند شامل نام کاربری باشد";
+                              }
                             }
                             return null;
                           },

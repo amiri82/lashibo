@@ -311,7 +311,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
-                      MyApp.of(context).currentUser = null;
+                      ref.invalidate(currentUserProvider);
                       Navigator.of(context).pop();
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const MyApp()));
