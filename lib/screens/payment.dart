@@ -2,17 +2,19 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:lashibo/main.dart";
+import 'package:lashibo/providers/current_user_provider.dart';
 
-class PaymentPage extends StatefulWidget {
+class PaymentPage extends ConsumerStatefulWidget {
   final int amount;
   const PaymentPage({required this.amount, Key? key}) : super(key: key);
 
   @override
-  State<PaymentPage> createState() => _PaymentPageState();
+  ConsumerState<PaymentPage> createState() => _PaymentPageState();
 }
 
-class _PaymentPageState extends State<PaymentPage> {
+class _PaymentPageState extends ConsumerState<PaymentPage> {
   bool showPassword = false;
   static const TextStyle fieldStyle = TextStyle(
     fontWeight: FontWeight.bold,
@@ -97,26 +99,6 @@ class _PaymentPageState extends State<PaymentPage> {
                     SizedBox(
                       height: 50,
                       child: TextField(
-                        decoration: InputDecoration(
-                          filled: true,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          suffixIcon: const Icon(Icons.credit_card),
-                          labelText: "شماره کارت",
-                          labelStyle: fieldStyle,
-                          floatingLabelBehavior: FloatingLabelBehavior.auto,
-                          floatingLabelStyle: floatingLabelStyle,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      child: TextField(
                         controller: passwordController,
                         obscureText: showPassword,
                         decoration: InputDecoration(
@@ -147,13 +129,13 @@ class _PaymentPageState extends State<PaymentPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
-                          String currentUsername = MyApp.of(context).currentUser!.username;
+                          String currentUsername = ref.read(currentUserProvider)!.username;
                           String serverRes = await addCredit(currentUsername, widget.amount);
                           bool success = serverRes.contains("true") && passwordController.text == '3056';
                           if(success){
-                            MyApp.of(context).currentUser!.credit += widget.amount;
+                            ref.read(currentUserProvider.notifier).changeCredit(widget.amount);
                           }
-                          Navigator.pop(context,MyApp.of(context).currentUser!.credit);
+                          Navigator.of(context).pop();
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,

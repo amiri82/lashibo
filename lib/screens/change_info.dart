@@ -4,15 +4,17 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:lashibo/main.dart";
+import "package:lashibo/providers/current_user_provider.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class ChangeInfoPage extends StatefulWidget {
+class ChangeInfoPage extends ConsumerStatefulWidget {
   const ChangeInfoPage({Key? key}) : super(key: key);
 
   @override
-  State<ChangeInfoPage> createState() => _ChangeInfoPageState();
+  ConsumerState<ChangeInfoPage> createState() => _ChangeInfoPageState();
 }
 
-class _ChangeInfoPageState extends State<ChangeInfoPage> {
+class _ChangeInfoPageState extends ConsumerState<ChangeInfoPage> {
   bool showPassword = false;
   static const TextStyle fieldStyle = TextStyle(
     fontWeight: FontWeight.bold,
@@ -60,7 +62,7 @@ class _ChangeInfoPageState extends State<ChangeInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    _emailController.text = MyApp.of(context).currentUser!.emailAddress;
+    _emailController.text = ref.read(currentUserProvider)!.emailAddress;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -167,8 +169,9 @@ class _ChangeInfoPageState extends State<ChangeInfoPage> {
                               if (!passReg.hasMatch(value)) {
                                 return "رمزعبور باید حداقل ۸ کاراکتر و شامل حداقل یک حرف بزرگ و یک عدد باشد";
                               }
-                              if (value.contains(_usernameController.text))
+                              if (value.contains(_usernameController.text)) {
                                 return "رمز عبور نمی تواند شامل نام کاربری باشد";
+                              }
                             }
                             return null;
                           },
@@ -213,13 +216,9 @@ class _ChangeInfoPageState extends State<ChangeInfoPage> {
                           ),
                           child: const Text("ثبت"),
                           onPressed: () async {
-                            String currentUsername =
-                                MyApp.of(context).currentUser!.username;
+                            String currentUsername = ref.read(currentUserProvider)!.username;
                             String newUsername = _usernameController.text;
                             if (_formKey.currentState!.validate()) {
-                              String currentUsername =
-                                  MyApp.of(context).currentUser!.username;
-                              String newUsername = _usernameController.text;
                               bool isUsernameChanged = _usernameController.text.isNotEmpty;
                               bool isPasswordChanged =
                                   _passwordController.text.isNotEmpty;
@@ -238,13 +237,17 @@ class _ChangeInfoPageState extends State<ChangeInfoPage> {
                                 } else {
                                   results +=
                                       "نام کاربری با موفقیت تغییر یافت ";
-                                  MyApp.of(context).currentUser!.username = newUsername;
+                                  ref.read(currentUserProvider.notifier).setUsername(newUsername);
                                   _usernameController.text = newUsername;
                                 }
                               }
                               if (isPasswordChanged) {
+                                if(results.isNotEmpty){
+                                  results += "\n";
+                                }
+                                currentUsername = ref.read(currentUserProvider)!.username;
                                 String result = await changePassword(
-                                    MyApp.of(context).currentUser!.username, _passwordController.text);
+                                    currentUsername, _passwordController.text);
                                 if (result.contains("false")) {
                                   results += "خطا در تغییر رمزعبور";
                                   changePasswordResult = false;
@@ -259,12 +262,13 @@ class _ChangeInfoPageState extends State<ChangeInfoPage> {
                                   ..showMaterialBanner(
                                     MaterialBanner(
                                       content: Text((isPasswordChanged || isUsernameChanged) ? results : "تغییری انجام نشد"),
+                                      overflowAlignment: OverflowBarAlignment.center,
                                       actions: [
                                         ElevatedButton(
                                           onPressed: () {
                                             ScaffoldMessenger.of(context)
                                                 .removeCurrentMaterialBanner();
-                                            Navigator.pop(context,MyApp.of(context).currentUser!.username);
+                                            Navigator.of(context).pop();
                                           },
                                           child: Text("باشه"),
                                         ),
@@ -277,6 +281,7 @@ class _ChangeInfoPageState extends State<ChangeInfoPage> {
                                   ..showMaterialBanner(
                                     MaterialBanner(
                                       content: Text(results),
+                                      overflowAlignment: OverflowBarAlignment.center,
                                       actions: [
                                         ElevatedButton(
                                           onPressed: () {

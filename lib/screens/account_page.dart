@@ -8,6 +8,7 @@ import "change_info.dart";
 import "dart:io";
 import "package:image_picker/image_picker.dart";
 import "package:lashibo/providers/themedata_provider.dart";
+import "package:lashibo/providers/current_user_provider.dart";
 
 class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -53,9 +54,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
       Icons.account_circle,
       size: 100,
     );
-    String currentUsername = MyApp.of(context).currentUser!.username;
-    int balance = MyApp.of(context).currentUser!.credit;
-    int premiumMonthsLeft = MyApp.of(context).currentUser!.premiumMonthsLeft;
     return Localizations.override(
       locale: const Locale("fa", "IR"),
       context: context,
@@ -95,7 +93,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                       height: 10,
                     ),
                     Text(
-                      currentUsername,
+                      ref.watch(
+                          currentUserProvider.select((user) => user!.username)),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -112,7 +111,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                           ),
                         ),
                         Text(
-                          "$balance",
+                          "${ref.watch(currentUserProvider.select((user) => user!.credit))}",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -127,7 +126,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "$premiumMonthsLeft",
+                          "${ref.watch(currentUserProvider.select((user) => user!.premiumMonthsLeft))}",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -169,9 +168,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                                           width: 200,
                                           child: ElevatedButton(
                                             onPressed: () async {
-                                              newBalance =
-                                                  await Navigator.of(context)
-                                                      .push(
+                                              await Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
                                                       PaymentPage(
@@ -193,9 +190,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                             },
                           );
                           await x;
-                          setState(() {
-                            balance = newBalance;
-                          });
                         },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -211,15 +205,12 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 ),
               ),
               ListTile(
-                onTap: () async {
-                  String newUsername = await Navigator.of(context).push(
+                onTap: () {
+                  Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const ChangeInfoPage(),
                     ),
                   );
-                  setState(() {
-                    currentUsername = MyApp.of(context).currentUser!.username;
-                  });
                 },
                 trailing: const Directionality(
                   textDirection: TextDirection.ltr,
@@ -277,7 +268,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                                 child: const Text("تایید"),
                                 onPressed: () async {
                                   String currentUsername =
-                                      MyApp.of(context).currentUser!.username;
+                                      ref.read(currentUserProvider)!.username;
                                   String serverRes =
                                       await addCredit(currentUsername, -_price);
                                   bool success1 = serverRes.contains("true");
@@ -286,16 +277,13 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                                       int.parse(monthController.text));
                                   bool success2 = serverRes2.contains("true");
                                   if (success1 && success2) {
-                                    MyApp.of(context).currentUser!.credit -=
-                                        _price;
-                                    MyApp.of(context)
-                                            .currentUser!
-                                            .premiumMonthsLeft +=
-                                        int.parse(monthController.text);
-                                    newPremiumMonths = premiumMonthsLeft +
-                                        int.parse(monthController.text);
-                                    newCredit = balance - _price;
-                                    //_premiumMonthsLeft +=  int.parse(monthController.text); //TODO
+                                    ref
+                                        .read(currentUserProvider.notifier)
+                                        .changeCredit(-_price);
+                                    ref
+                                        .read(currentUserProvider.notifier)
+                                        .changePremiumMonthsLeft(
+                                            int.parse(monthController.text));
                                   }
                                   Navigator.of(context).pop();
                                 },
@@ -307,9 +295,6 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                     },
                   );
                   await x;
-                  setState(() {
-                    premiumMonthsLeft = newPremiumMonths;
-                  });
                 },
                 trailing: const Directionality(
                   textDirection: TextDirection.ltr,

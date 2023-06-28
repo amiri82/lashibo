@@ -1,18 +1,20 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:lashibo/providers/current_user_provider.dart";
 import "main_page.dart";
 import "register_page.dart";
 import "dart:io";
 import "package:lashibo/main.dart";
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   bool showPassword = false;
   static const TextStyle fieldStyle = TextStyle(
     fontWeight: FontWeight.bold,
@@ -46,9 +48,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    //_emailController.text =
-        "amirhossein.zeinali22@gmail.com"; //TODO : remove this line
-    //_passwordController.text = "Amiri1382"; //TODO : remove this line
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -195,7 +194,8 @@ class _LoginPageState extends State<LoginPage> {
                                   _passwordController.text);
                               if (result.contains(":")) {
                                 List<String> creds = result.split(":");
-                                MyApp.of(context).changeCurrentUser(creds[0], creds[1], int.parse(creds[2]),int.parse(creds[3]));
+                                ref.read(currentUserProvider.notifier).setUser(creds[0], creds[1], int.parse(creds[2]), int.parse(creds[3]));
+                                //MyApp.of(context).changeCurrentUser(creds[0], creds[1], int.parse(creds[2]),int.parse(creds[3]));
                                 Navigator.of(context).pop();
                                 Navigator.of(context).push(
                                   MaterialPageRoute(

@@ -26,7 +26,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   User? currentUser;
   @override
   Widget build(BuildContext context) {
-    final ThemeMode themeMode = ref.watch(themeDataProvider);
+
     return MaterialApp(
       theme: ThemeData(
         fontFamily: "Iranyekan",
@@ -36,7 +36,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         fontFamily: "Iranyekan",
         brightness: Brightness.dark,
       ),
-      themeMode: themeMode,
+      themeMode: ref.watch(themeDataProvider),
       debugShowCheckedModeBanner: false,
       home: const LoginPage(),
       localizationsDelegates: const [
