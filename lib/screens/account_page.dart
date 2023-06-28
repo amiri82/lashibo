@@ -1,20 +1,22 @@
 import "dart:typed_data";
 
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:lashibo/main.dart";
 import "package:lashibo/screens/payment.dart";
 import "change_info.dart";
 import "dart:io";
 import "package:image_picker/image_picker.dart";
+import "package:lashibo/providers/themedata_provider.dart";
 
-class AccountPage extends StatefulWidget {
+class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  ConsumerState<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _AccountPageState extends ConsumerState<AccountPage> {
   final TextEditingController paymentController = TextEditingController();
   final TextEditingController monthController = TextEditingController();
   int _price = 0;
@@ -227,7 +229,7 @@ class _AccountPageState extends State<AccountPage> {
               ),
               ListTile(
                 onTap: () {
-                  MyApp.of(context).changeThemeMode();
+                  ref.read(themeDataProvider.notifier).changeTheme();
                 },
                 trailing: const Directionality(
                   textDirection: TextDirection.ltr,

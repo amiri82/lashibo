@@ -1,16 +1,17 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lashibo/providers/themedata_provider.dart';
 import "screens/login_page.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
 import "src/User.dart";
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // ignore: library_private_types_in_public_api
@@ -18,14 +19,14 @@ class MyApp extends StatefulWidget {
       context.findAncestorStateOfType<_MyAppState>()!;
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.light;
+class _MyAppState extends ConsumerState<MyApp> {
   User? currentUser;
   @override
   Widget build(BuildContext context) {
+    final ThemeMode themeMode = ref.watch(themeDataProvider);
     return MaterialApp(
       theme: ThemeData(
         fontFamily: "Iranyekan",
@@ -35,7 +36,7 @@ class _MyAppState extends State<MyApp> {
         fontFamily: "Iranyekan",
         brightness: Brightness.dark,
       ),
-      themeMode: _themeMode,
+      themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       home: const LoginPage(),
       localizationsDelegates: const [
@@ -48,13 +49,6 @@ class _MyAppState extends State<MyApp> {
         Locale("en", "US"),
       ],
     );
-  }
-
-  void changeThemeMode() {
-    setState(() {
-      _themeMode =
-      _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    });
   }
 
   void changeCurrentUser(String username, String emailAddress, int credit,int premiumMonthsLeft){

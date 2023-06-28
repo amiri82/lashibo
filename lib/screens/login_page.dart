@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             floatingLabelStyle: floatingLabelStyle,
                             floatingLabelBehavior: FloatingLabelBehavior.auto,
-                            suffixIcon: GestureDetector(
+                            suffixIcon: GestureDetector( //TODO:IconButton
                               child: !showPassword
                                   ? const Icon(Icons.visibility_off)
                                   : const Icon(Icons.visibility),
