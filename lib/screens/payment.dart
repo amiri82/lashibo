@@ -3,11 +3,12 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:lashibo/main.dart";
 import 'package:lashibo/providers/current_user_provider.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
 
 class PaymentPage extends ConsumerStatefulWidget {
   final int amount;
+
   const PaymentPage({required this.amount, Key? key}) : super(key: key);
 
   @override
@@ -29,8 +30,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
   Future<String> addCredit(String username, int amount) async {
     Socket socket = await Socket.connect("192.168.213.252", 3773);
     print("Entered this");
-    socket.writeln(
-        "addcredit $username $amount");
+    socket.writeln("addcredit $username $amount");
     String result = "";
     var done = socket.listen((Uint8List buffer) {
       String response = String.fromCharCodes(buffer);
@@ -41,7 +41,9 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
     print("add Credit Result : $result");
     return result;
   }
+
   final passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,9 +63,22 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.monetization_on,
-                      size: 85,
+                    Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: CreditCardWidget(
+                        cardNumber: "4494218125210453",
+                        expiryDate: "07/2025",
+                        cardHolderName: "Amirhossein Zeinali",
+                        cvvCode: "***",
+                        showBackView: false,
+                        onCreditCardWidgetChange: (brand) {},
+                        isHolderNameVisible: true,
+                        labelValidThru: "",
+                        labelExpiredDate: "Exp.",
+                        cardBgColor: Colors.grey,
+                        cardType: CardType.mastercard,
+                        height: MediaQuery.of(context).size.height * 0.25,
+                      ),
                     ),
                     const SizedBox(
                       height: 8.0,
@@ -129,11 +144,16 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () async {
-                          String currentUsername = ref.read(currentUserProvider)!.username;
-                          String serverRes = await addCredit(currentUsername, widget.amount);
-                          bool success = serverRes.contains("true") && passwordController.text == '3056';
-                          if(success){
-                            ref.read(currentUserProvider.notifier).changeCredit(widget.amount);
+                          String currentUsername =
+                              ref.read(currentUserProvider)!.username;
+                          String serverRes =
+                              await addCredit(currentUsername, widget.amount);
+                          bool success = serverRes.contains("true") &&
+                              passwordController.text == '3056';
+                          if (success) {
+                            ref
+                                .read(currentUserProvider.notifier)
+                                .changeCredit(widget.amount);
                           }
                           Navigator.of(context).pop();
                         },
