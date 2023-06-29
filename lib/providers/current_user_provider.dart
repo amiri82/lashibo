@@ -1,4 +1,5 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:lashibo/src/book.dart";
 import "package:lashibo/src/user.dart";
 
 class CurrentUserNotifier extends StateNotifier<User?> {
@@ -30,11 +31,12 @@ class CurrentUserNotifier extends StateNotifier<User?> {
     }
   }
 
-  void changeEmailAddress(String newEmailAddress) {
-    if (state != null) {
-      state = User(state!.username, newEmailAddress, state!.credit,
-          state!.premiumMonthsLeft);
-    }
+  void addBook(Book book){
+    state = User(state!.username, state!.emailAddress, state!.credit, state!.premiumMonthsLeft, [...state!.booksBought,book]);
+  }
+
+  void addFavoriteBook(Book book){
+    state = User(state!.username, state!.emailAddress, state!.credit, state!.premiumMonthsLeft, state!.booksBought, [...state!.favoriteBooks,book]);
   }
 }
 

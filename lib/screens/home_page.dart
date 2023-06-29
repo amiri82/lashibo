@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:lashibo/dummy_data/dummy_books.dart";
 import "details_page.dart";
 
 class HomePage extends StatefulWidget {
@@ -134,7 +135,7 @@ class _HomePageState extends State<HomePage> {
             (index) => GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => DetailsPage()));
+                    MaterialPageRoute(builder: (context) => DetailsPage(dummyBooks[0])));
               },
               child: Container(
                 height: 100,
@@ -163,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                 (index) => GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => DetailsPage()));
+                    MaterialPageRoute(builder: (context) => DetailsPage(dummyBooks[0])));
               },
               child: Container(
                 height: 100,

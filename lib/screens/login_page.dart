@@ -11,9 +11,11 @@ class LoginPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
+
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+
   bool showPassword = false;
   static const TextStyle fieldStyle = TextStyle(
     fontWeight: FontWeight.bold,
@@ -217,25 +219,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         },
                                       ),
                                     );
-                                  }
-                                } else {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context)
-                                      ..removeCurrentMaterialBanner()
-                                      ..showMaterialBanner(
-                                        MaterialBanner(
-                                          content: const Text(
-                                              "نام کاربری یا رمزعبور اشتباه است"),
-                                          actions: [
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  ScaffoldMessenger.of(context)
-                                                      .hideCurrentMaterialBanner();
-                                                },
-                                                child: const Text("باشه"))
-                                          ],
-                                        ),
-                                      );
+                                  } else {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                        ..removeCurrentMaterialBanner()
+                                        ..showMaterialBanner(
+                                          MaterialBanner(
+                                            content: const Text(
+                                                "نام کاربری یا رمزعبور اشتباه است"),
+                                            actions: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .hideCurrentMaterialBanner();
+                                                  },
+                                                  child: const Text("باشه"))
+                                            ],
+                                          ),
+                                        );
+                                    }
                                   }
                                 }
                               }
