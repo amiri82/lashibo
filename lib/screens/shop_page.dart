@@ -13,8 +13,6 @@ class ShopPage extends ConsumerStatefulWidget {
 }
 
 class _ShopPageState extends ConsumerState<ShopPage> {
-  final _searchController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final List<Book> selectedBooks = ref.watch(filteredBooksProvider);
@@ -22,8 +20,8 @@ class _ShopPageState extends ConsumerState<ShopPage> {
       child: Column(
         children: [
           AppBar(
-            title: TextField(
-              controller: _searchController,
+            title: TextFormField(
+              initialValue: ref.read(searchTextProvider),
               style: const TextStyle(color: Colors.white),
               cursorColor: Colors.white,
               decoration: const InputDecoration(

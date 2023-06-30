@@ -48,6 +48,14 @@ final favoriteBooksProvider = Provider<List<Book>>((ref) {
   return ref.watch(currentUserProvider.select((user) => user!.favoriteBooks));
 });
 
+final finishedReadingBooksProvider = Provider<List<Book>>((ref) {
+  return ref.watch(currentUserProvider.select((user) => user!.finishedReading));
+});
+
+final stillReadingBooksProvider = Provider<List<Book>>((ref) {
+  return ref.watch(currentUserProvider.select((user) => user!.stillReading));
+});
+
 final libraryBooksProvider = Provider<List<Book>>((ref) {
   final boughtBooks =
       ref.watch(currentUserProvider.select((user) => user!.booksBought));

@@ -29,38 +29,41 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
         itemCount: libraryBooks.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                DropdownButton<SortCriteria>(
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(15),
-                  value: dropDownValue,
-                  items: const <DropdownMenuItem<SortCriteria>>[
-                    DropdownMenuItem(
-                      value: SortCriteria.textBook,
-                      child: Text("کتاب متنی"),
-                    ),
-                    DropdownMenuItem(
-                      value: SortCriteria.audioBook,
-                      child: Text("کتاب صوتی"),
-                    ),
-                    DropdownMenuItem(
-                      value: SortCriteria.lastRead,
-                      child: Text("تاریخ مطالعه"),
-                    ),
-                    DropdownMenuItem(
-                      value: SortCriteria.rating,
-                      child: Text("امتیاز"),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    ref
-                        .read(librarySortCriteriaProvider.notifier)
-                        .changeCriteria(value!);
-                  },
-                ),
-              ],
+            return Padding(
+              padding: const EdgeInsets.only(right: 10,top: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  DropdownButton<SortCriteria>(
+                    underline: Container(),
+                    borderRadius: BorderRadius.circular(15),
+                    value: dropDownValue,
+                    items: const <DropdownMenuItem<SortCriteria>>[
+                      DropdownMenuItem(
+                        value: SortCriteria.textBook,
+                        child: Text("کتاب متنی"),
+                      ),
+                      DropdownMenuItem(
+                        value: SortCriteria.audioBook,
+                        child: Text("کتاب صوتی"),
+                      ),
+                      DropdownMenuItem(
+                        value: SortCriteria.lastRead,
+                        child: Text("تاریخ مطالعه"),
+                      ),
+                      DropdownMenuItem(
+                        value: SortCriteria.rating,
+                        child: Text("امتیاز"),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      ref
+                          .read(librarySortCriteriaProvider.notifier)
+                          .changeCriteria(value!);
+                    },
+                  ),
+                ],
+              ),
             );
           }
           return GestureDetector(

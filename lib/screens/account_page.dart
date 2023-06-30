@@ -3,8 +3,10 @@ import "dart:typed_data";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:lashibo/main.dart";
+import "package:lashibo/providers/book_provider.dart";
+import "package:lashibo/screens/booklist_page.dart";
 import "package:lashibo/screens/payment.dart";
-import "change_info.dart";
+import "change_info_page.dart";
 import "dart:io";
 import "package:image_picker/image_picker.dart";
 import "package:lashibo/providers/themedata_provider.dart";
@@ -23,6 +25,18 @@ class _AccountPageState extends ConsumerState<AccountPage> {
   int _price = 0;
   File? _profileImage;
 
+  void _imageSelector() async {
+    final imagePicker = ImagePicker();
+    final takenImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (takenImage == null) {
+        _profileImage = null;
+        return;
+      }
+      _profileImage = File(takenImage.path);
+    });
+  }
+
   Future<String> addPremiumMonths(String username, int months) async {
     Socket s = await Socket.connect("192.168.213.252", 3773);
     s.writeln("addpremiummonths $username $months");
@@ -36,16 +50,17 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     return result;
   }
 
-  void _imageSelector() async {
-    final imagePicker = ImagePicker();
-    final takenImage = await imagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (takenImage == null) {
-        _profileImage = null;
-        return;
-      }
-      _profileImage = File(takenImage.path);
+  Future<String> addCredit(String username, int amount) async {
+    Socket socket = await Socket.connect("192.168.213.252", 3773);
+    socket.writeln("addcredit $username $amount");
+    String result = "";
+    var done = socket.listen((Uint8List buffer) {
+      String response = String.fromCharCodes(buffer);
+      result = response;
+      socket.close();
     });
+    await done.asFuture<void>();
+    return result;
   }
 
   @override
@@ -299,6 +314,34 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 ),
                 title: const Text("ارتقا به اکانت ویژه"),
               ),
+              ListTile(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BookList(ref.read(favoriteBooksProvider)!),
+                    ),
+                  );
+                },
+                trailing: const Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Icon(Icons.arrow_back_rounded),
+                ),
+                title: const Text("کتاب های پسند شده"),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BookList(ref.read(finishedReadingBooksProvider)!),
+                    ),
+                  );
+                },
+                trailing: const Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Icon(Icons.arrow_back_rounded),
+                ),
+                title: const Text("کتاب های خوانده شده"),
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -334,18 +377,5 @@ class _AccountPageState extends ConsumerState<AccountPage> {
         ),
       ),
     );
-  }
-
-  Future<String> addCredit(String username, int amount) async {
-    Socket socket = await Socket.connect("192.168.213.252", 3773);
-    socket.writeln("addcredit $username $amount");
-    String result = "";
-    var done = socket.listen((Uint8List buffer) {
-      String response = String.fromCharCodes(buffer);
-      result = response;
-      socket.close();
-    });
-    await done.asFuture<void>();
-    return result;
   }
 }
