@@ -30,9 +30,11 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
         itemBuilder: (context, index) {
           if (index == 0) {
             return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 DropdownButton<SortCriteria>(
+                  underline: Container(),
+                  borderRadius: BorderRadius.circular(15),
                   value: dropDownValue,
                   items: const <DropdownMenuItem<SortCriteria>>[
                     DropdownMenuItem(
@@ -61,16 +63,16 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
               ],
             );
           }
-          return Card(
-            elevation: 8,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => DetailsPage(libraryBooks[index - 1]),
-                  ),
-                );
-              },
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => DetailsPage(libraryBooks[index - 1]),
+                ),
+              );
+            },
+            child: Card(
+              elevation: 8,
               child: Row(
                 children: [
                   Expanded(

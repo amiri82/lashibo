@@ -6,6 +6,7 @@ enum BookType {
 }
 
 enum Category{
+  all,
   fiction,
   history,
   biography,
@@ -28,6 +29,7 @@ class Book {
   double rating;
   final List<Comment> comments;
   final Category category;
+  final bool isPremium;
 
   Book({required this.title,
     required this.description,
@@ -39,6 +41,7 @@ class Book {
     required this.imageAddress,
     this.rating = 0,
     this.comments = const[],
+    this.isPremium = false,
   }){
     if(comments.isNotEmpty){
       for(final comment in comments){

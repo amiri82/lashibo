@@ -8,7 +8,9 @@ class User{
     int premiumMonthsLeft;
     List<Book> booksBought;
     List<Book> favoriteBooks;
-    User(this.username,this.emailAddress,this.credit,this.premiumMonthsLeft,[this.booksBought = const [],this.favoriteBooks = const[]]){
+    List<Book> stillReading;
+    User(this.username,this.emailAddress,this.credit,this.premiumMonthsLeft,[this.booksBought = const [],this.favoriteBooks = const[],this.stillReading = const[]]){
         booksBought = dummyBooks.getRange(0, 6).toList();
     }
+
 }

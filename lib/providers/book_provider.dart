@@ -8,8 +8,8 @@ final bookProvider = Provider<List<Book>>((ref) {
   return dummyBooks;
 });
 
-class ShopCategoryNotifier extends StateNotifier<Category?> {
-  ShopCategoryNotifier() : super(null);
+class ShopCategoryNotifier extends StateNotifier<Category> {
+  ShopCategoryNotifier() : super(Category.all);
 
   void changeCategory(Category newCategory) {
     state = newCategory;
@@ -37,7 +37,7 @@ final shopCategoryProvider =
 final categoryFilteredProvider = Provider<List<Book>>((ref) {
   final books = ref.watch(bookProvider);
   final selectedCategory = ref.watch(shopCategoryProvider);
-  if (selectedCategory == null) {
+  if (selectedCategory == Category.all) {
     return books;
   } else {
     return books.where((book) => book.category == selectedCategory).toList();
@@ -65,8 +65,20 @@ final libraryBooksProvider = Provider<List<Book>>((ref) {
         .toList();
     result.sort((a, b) => a.title.compareTo(b.title));
   }
-  if(sortCriteria == SortCriteria.rating){
+  if (sortCriteria == SortCriteria.rating) {
     result.sort((a, b) => a.rating.compareTo(b.rating));
   }
   return result;
+});
+
+final searchTextProvider = StateProvider<String>((ref) => '');
+
+final filteredBooksProvider = Provider<List<Book>>((ref) {
+  final searchText = ref.watch(searchTextProvider);
+  final books = ref.watch(categoryFilteredProvider);
+  if (searchText.isNotEmpty) {
+    final result = books.where((element) => element.title.toLowerCase().contains(searchText.toLowerCase())).toList();
+    return result;
+  }
+  return books;
 });
