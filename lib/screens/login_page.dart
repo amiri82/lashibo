@@ -1,7 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:lashibo/providers/book_provider.dart";
 import "package:lashibo/providers/current_user_provider.dart";
+import "package:lashibo/src/book.dart";
 import "main_page.dart";
 import "register_page.dart";
 import "dart:io";
@@ -11,11 +13,9 @@ class LoginPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
-
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-
   bool showPassword = false;
   static const TextStyle fieldStyle = TextStyle(
     fontWeight: FontWeight.bold,
@@ -36,7 +36,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<String> authenticate(String username, String password) async {
     Socket s = await Socket.connect("192.168.213.252", 3773);
-    s.writeln("login $username $password");
+    s.writeln("login::$username::$password");
     String result = "false";
     var done = s.listen((Uint8List buffer) async {
       String response = String.fromCharCodes(buffer);
@@ -197,15 +197,46 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 String result = await authenticate(
                                     _emailController.text,
                                     _passwordController.text);
-                                if (result.contains(":")) {
-                                  List<String> creds = result.split(":");
+                                if (result.contains("::")) {
+                                  Map<String, Book> bookMap =
+                                      ref.read(bookMapProvider);
+                                  List<String> creds = result.split("::");
+                                  List<Book> booksBought = creds[4].isEmpty
+                                      ? []
+                                      : creds[4]
+                                          .split(",,")
+                                          .map((name) => bookMap[name]!)
+                                          .toList();
+                                  List<Book> favoriteBooks = creds[5].isEmpty
+                                      ? []
+                                      : creds[5]
+                                          .split(",,")
+                                          .map((name) => bookMap[name]!)
+                                          .toList();
+                                  List<Book> stillReading = creds[6].isEmpty
+                                      ? []
+                                      : creds[6]
+                                          .split(",,")
+                                          .map((name) => bookMap[name]!)
+                                          .toList();
+                                  List<Book> finishedReading = creds[7].isEmpty
+                                      ? []
+                                      : creds[7]
+                                          .split(",,")
+                                          .map((name) => bookMap[name]!)
+                                          .toList();
+
                                   ref
                                       .read(currentUserProvider.notifier)
                                       .setUser(
                                           creds[0],
                                           creds[1],
                                           int.parse(creds[2]),
-                                          int.parse(creds[3]));
+                                          int.parse(creds[3]),
+                                          booksBought,
+                                          favoriteBooks,
+                                          stillReading,
+                                          finishedReading);
                                   TextInput.finishAutofillContext();
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context)

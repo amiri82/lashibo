@@ -39,7 +39,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
 
   Future<String> addPremiumMonths(String username, int months) async {
     Socket s = await Socket.connect("192.168.213.252", 3773);
-    s.writeln("addpremiummonths $username $months");
+    s.writeln("addpremiummonths::$username::$months");
     String result = "false";
     var done = s.listen((Uint8List buffer) async {
       String response = String.fromCharCodes(buffer);
@@ -52,7 +52,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
 
   Future<String> addCredit(String username, int amount) async {
     Socket socket = await Socket.connect("192.168.213.252", 3773);
-    socket.writeln("addcredit $username $amount");
+    socket.writeln("addcredit::$username::$amount");
     String result = "";
     var done = socket.listen((Uint8List buffer) {
       String response = String.fromCharCodes(buffer);

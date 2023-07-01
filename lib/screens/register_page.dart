@@ -26,7 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
       String username, String emailAddress, String password) async {
     Socket socket = await Socket.connect("192.168.213.252", 3773);
     String? result;
-    socket.writeln("signup $username $emailAddress $password");
+    socket.writeln("signup::$username::$emailAddress::$password");
     var done = socket.listen((Uint8List buffer) async {
       result = String.fromCharCodes(buffer);
       socket.close();

@@ -34,7 +34,7 @@ class _ChangeInfoPageState extends ConsumerState<ChangeInfoPage> {
 
   Future<String> changeUsername(String oldUsername, String newUsername) async {
     Socket s = await Socket.connect("192.168.213.252", 3773);
-    s.writeln("changeusername $oldUsername $newUsername");
+    s.writeln("changeusername::$oldUsername::$newUsername");
     String result = "false";
     var done = s.listen((Uint8List buffer) async {
       String response = String.fromCharCodes(buffer);
@@ -47,7 +47,7 @@ class _ChangeInfoPageState extends ConsumerState<ChangeInfoPage> {
 
   Future<String> changePassword(String username, String newPassword) async {
     Socket s = await Socket.connect("192.168.213.252", 3773);
-    s.writeln("changepassword $username $newPassword");
+    s.writeln("changepassword::$username::$newPassword");
     String result = "false";
     var done = s.listen((Uint8List buffer) async {
       String response = String.fromCharCodes(buffer);

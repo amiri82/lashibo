@@ -17,6 +17,20 @@ enum Category{
   thriller,
   nonFiction,
 }
+enum Filter{
+  bestSeller,
+  mostRecent,
+  highestRating,
+}
+
+enum Status{
+  notBought,
+  bought,
+  stillReading,
+  notBoughtPremium,
+  soldOut,
+  free,
+}
 
 class Book {
   final String title;

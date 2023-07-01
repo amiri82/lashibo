@@ -1,4 +1,3 @@
-import 'package:lashibo/dummy_data/dummy_books.dart';
 import 'package:lashibo/src/book.dart';
 
 class User{
@@ -10,10 +9,6 @@ class User{
     List<Book> favoriteBooks;
     List<Book> stillReading;
     List<Book> finishedReading;
-    User(this.username,this.emailAddress,this.credit,this.premiumMonthsLeft,[this.booksBought = const [],this.favoriteBooks = const[],this.stillReading = const[],this.finishedReading = const []]){
-        booksBought = dummyBooks.getRange(0, 6).toList();
-        favoriteBooks = [dummyBooks[0]];
-        finishedReading = [dummyBooks[2]];
-    }
+    User(this.username,this.emailAddress,this.credit,this.premiumMonthsLeft,[this.booksBought = const [],this.favoriteBooks = const[],this.stillReading = const[],this.finishedReading = const []]);
 
 }
