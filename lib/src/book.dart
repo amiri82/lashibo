@@ -1,4 +1,4 @@
-import 'comment.dart';
+import 'package:lashibo/src/user.dart';
 
 enum BookType {
   audioBook,
@@ -64,4 +64,20 @@ class Book {
       rating /= comments.length;
     }
   }
+
+  Book addComment(Comment comment){
+    comments.add(comment);
+    return this;
+  }
+}
+
+class Comment {
+  final String username;
+  final String comment;
+  final int rating;
+  final List<User> usersLiked;
+  final List<User> usersDisliked;
+
+  Comment(this.username ,this.comment, this.rating,
+      [this.usersLiked = const [], this.usersDisliked = const []]);
 }

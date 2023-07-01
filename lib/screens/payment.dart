@@ -144,16 +144,33 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
                         onPressed: () async {
                           String currentUsername =
                               ref.read(currentUserProvider)!.username;
-                          String serverRes =
-                              await addCredit(currentUsername, widget.amount);
-                          bool success = serverRes.contains("true") &&
-                              passwordController.text == '3056';
+                          String serverRes = passwordController.text == '3056' ? await addCredit(currentUsername, widget.amount) : "false";
+                          bool success = serverRes.contains("true");
                           if (success) {
                             ref
                                 .read(currentUserProvider.notifier)
                                 .changeCredit(widget.amount);
                           }
-                          Navigator.of(context).pop();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showMaterialBanner(
+                              MaterialBanner(
+                                backgroundColor: success ? Colors.greenAccent : Colors.redAccent,
+                                content: Text(success
+                                    ? "پرداخت موفقیت آمیز"
+                                    : "رمز نادرست"),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context)
+                                          .clearMaterialBanners();
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("باشه"),
+                                  )
+                                ],
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black,

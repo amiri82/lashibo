@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:gap/gap.dart";
 import "package:lashibo/providers/book_provider.dart";
 import "package:lashibo/providers/current_user_provider.dart";
 import "package:lashibo/src/book.dart";
@@ -169,17 +170,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "فراموشی رمز عبور",
-                              style: TextStyle(
-                                  fontSize: 13.5, color: Color(0xFF60c6cd)),
-                            ),
-                          ),
-                        ),
+                        const Gap(20),
                         SizedBox(
                           width: double.infinity,
                           height: 50,

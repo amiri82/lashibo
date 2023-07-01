@@ -4,8 +4,16 @@ import "package:lashibo/screens/library_page.dart";
 import "package:lashibo/src/book.dart";
 import "package:lashibo/providers/current_user_provider.dart";
 
-final bookProvider = Provider<List<Book>>((ref) {
-  return dummyBooks;
+class BookNotifier extends StateNotifier<List<Book>> {
+  BookNotifier() : super(dummyBooks);
+
+  void addComment(Book book , Comment comment){
+    state = dummyBooks.map((e) => e == book ? e.addComment(comment) : e).toList();
+  }
+}
+
+final bookProvider = StateNotifierProvider<BookNotifier,List<Book>>((ref) {
+  return BookNotifier();
 });
 
 class ShopCategoryNotifier extends StateNotifier<Category> {
@@ -38,7 +46,7 @@ class HomeFilterNotifier extends StateNotifier<Filter> {
 }
 
 final homeFilterProvider =
-StateNotifierProvider<HomeFilterNotifier, Filter>((ref) {
+    StateNotifierProvider<HomeFilterNotifier, Filter>((ref) {
   return HomeFilterNotifier();
 });
 
@@ -93,32 +101,42 @@ final libraryBooksProvider = Provider<List<Book>>((ref) {
 });
 
 final homeFilteredTextBookProvider = Provider<List<Book>>((ref) {
-  final allBooks = ref.watch(bookProvider).where((element) => element.bookType == BookType.textBook).toList();
+  final allBooks = ref
+      .watch(bookProvider)
+      .where((element) => element.bookType == BookType.textBook)
+      .toList();
   final homeFilter = ref.watch(homeFilterProvider);
   List<Book> result = allBooks;
-  if(homeFilter == Filter.bestSeller){
+  if (homeFilter == Filter.bestSeller) {
     return result;
   }
-  if(homeFilter == Filter.highestRating){
-    result.sort((a, b) => a.rating.compareTo(b.rating),);
+  if (homeFilter == Filter.highestRating) {
+    result.sort(
+      (a, b) => a.rating.compareTo(b.rating),
+    );
   }
-  if(homeFilter == Filter.mostRecent){
+  if (homeFilter == Filter.mostRecent) {
     result = result.reversed.toList();
   }
   return result;
 });
 
 final homeFilteredAudioBookProvider = Provider<List<Book>>((ref) {
-  final allBooks = ref.watch(bookProvider).where((element) => element.bookType == BookType.audioBook).toList();
+  final allBooks = ref
+      .watch(bookProvider)
+      .where((element) => element.bookType == BookType.audioBook)
+      .toList();
   final homeFilter = ref.watch(homeFilterProvider);
   List<Book> result = allBooks;
-  if(homeFilter == Filter.bestSeller){
+  if (homeFilter == Filter.bestSeller) {
     return result;
   }
-  if(homeFilter == Filter.highestRating){
-    result.sort((a, b) => a.rating.compareTo(b.rating),);
+  if (homeFilter == Filter.highestRating) {
+    result.sort(
+      (a, b) => a.rating.compareTo(b.rating),
+    );
   }
-  if(homeFilter == Filter.mostRecent){
+  if (homeFilter == Filter.mostRecent) {
     result = result.reversed.toList();
   }
   return result;
@@ -139,7 +157,7 @@ final filteredBooksProvider = Provider<List<Book>>((ref) {
   return books;
 });
 
-final bookMapProvider = Provider<Map<String,Book>>((ref){
+final bookMapProvider = Provider<Map<String, Book>>((ref) {
   final bookList = ref.watch(bookProvider);
-  return {for (final b in bookList) b.title:b};
+  return {for (final b in bookList) b.title: b};
 });
